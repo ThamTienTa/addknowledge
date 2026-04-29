@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UnFail — AI Training Data</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --border: #1e1e2e;
+    --border-bright: #2e2e4e;
+    --accent: #7c6ef7;
+    --accent-dim: #3d3580;
+    --green: #22c55e;
+    --green-dim: #14532d;
+    --red: #ef4444;
+    --red-dim: #450a0a;
+    --text: #e8e8f0;
+    --text-dim: #888899;
+    --text-muted: #444455;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Sora', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* Subtle grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  /* HEADER */
+  header {
+    margin-bottom: 48px;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  header p {
+    color: var(--text-dim);
+    font-size: 14px;
+    font-weight: 300;
+  }
+
+  /* INSTRUCTION BOX */
+  .instruction-box {
+    background: #0d0d1a;
+    border: 1px solid var(--border-bright);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .instruction-box h3 {
+    font-size: 11px;
+    font-family: var(--mono);
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .instruction-box p {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+    line-height: 1.7;
+  }
+
+  .code-example {
+    background: #07070e;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #a0a0c0;
+    line-height: 1.9;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .code-example .user-line { color: #7c6ef7; }
+  .code-example .ai-line   { color: #22c55e; }
+
+  /* FORM */
+  .submit-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 48px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .submit-card h2 {
+    font-size: 13px;
+    font-family: var(--mono);
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .field {
+    margin-bottom: 16px;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-family: var(--mono);
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    background: #0a0a12;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus { border-color: var(--accent); }
+
+  textarea {
+    width: 100%;
+    background: #0a0a12;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.8;
+    resize: vertical;
+    min-height: 180px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  textarea:focus { border-color: var(--accent); }
+
+  textarea::placeholder,
+  input::placeholder { color: var(--text-muted); }
+
+  .submit-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 11px 28px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-top: 4px;
+  }
+
+  .submit-btn:hover { opacity: 0.85; }
+  .submit-btn:active { transform: scale(0.98); }
+
+  /* SECTIONS */
+  .section { margin-bottom: 48px; animation: fadeUp 0.6s 0.3s ease both; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-header h2 {
+    font-size: 13px;
+    font-family: var(--mono);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 700;
+  }
+
+  .badge-pending { background: #2a1f00; color: #f59e0b; border: 1px solid #78350f; }
+  .badge-approved { background: var(--green-dim); color: var(--green); border: 1px solid #166534; }
+
+  .empty-state {
+    border: 1px dashed var(--border-bright);
+    border-radius: 8px;
+    padding: 28px;
+    text-align: center;
+    color: var(--text-muted);
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 14px;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: var(--border-bright); }
+
+  .card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .card-submitter {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: #1a1530;
+    padding: 3px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--accent-dim);
+  }
+
+  .card-time {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .card-text {
+    background: #07070e;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.9;
+    color: #b0b0d0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin-bottom: 14px;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+
+  /* Scrollbar */
+  .card-text::-webkit-scrollbar { width: 4px; }
+  .card-text::-webkit-scrollbar-track { background: transparent; }
+  .card-text::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 2px; }
+
+  .card-actions { display: flex; gap: 8px; }
+
+  .btn {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .btn:active { transform: scale(0.97); }
+  .btn:hover { opacity: 0.8; }
+
+  .btn-approve {
+    background: var(--green-dim);
+    color: var(--green);
+    border-color: #166534;
+  }
+
+  .btn-delete {
+    background: var(--red-dim);
+    color: var(--red);
+    border-color: #7f1d1d;
+  }
+
+  /* Approved card slight green tint */
+  .card-approved {
+    border-color: #14532d;
+  }
+
+  .approved-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--green);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .approved-label::before {
+    content: '✓';
+    background: var(--green-dim);
+    border: 1px solid #166534;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Flash success */
+  .flash {
+    background: #0a1f0a;
+    border: 1px solid #166534;
+    color: var(--green);
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    margin-bottom: 20px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <header>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div class="logo">UnFail · AI Data Collector</div>
+        <h1>Training Data Submissions</h1>
+        <p>Mọi người gửi dữ liệu hội thoại để huấn luyện AI — chủ sở hữu xét duyệt trước khi sử dụng.</p>
+      </div>
+      <div style="padding-top:6px;">
+        {% if is_owner %}
+          <span style="font-family:var(--mono);font-size:10px;color:var(--green);background:#0a1f0a;border:1px solid #166534;border-radius:20px;padding:5px 12px;margin-right:8px;">● Owner</span>
+          <a href="/logout" style="font-family:var(--mono);font-size:10px;color:var(--text-dim);text-decoration:none;border:1px solid var(--border);border-radius:20px;padding:5px 12px;">Logout</a>
+        {% else %}
+          <a href="/login" style="font-family:var(--mono);font-size:10px;color:var(--accent);text-decoration:none;border:1px solid var(--accent-dim);border-radius:20px;padding:5px 12px;">Owner Login →</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <!-- INSTRUCTIONS -->
+  <div class="instruction-box">
+    <h3>📋 Hướng dẫn định dạng</h3>
+    <p>Vui lòng nhập dữ liệu theo đúng định dạng dưới đây. Mỗi cặp hội thoại gồm một dòng <strong>User:</strong> và một dòng <strong>AI:</strong>. Bạn có thể gửi nhiều cặp trong một lần.</p>
+    <div class="code-example"><span class="user-line">User: hi</span>
+<span class="ai-line">AI: hello! how are you today?</span>
+
+<span class="user-line">User: hi</span>
+<span class="ai-line">AI: hey! nice to talk to you</span>
+
+<span class="user-line">User: how are you</span>
+<span class="ai-line">AI: i'm doing well, thanks for asking. how about you?</span>
+
+<span class="user-line">User: what is your name</span>
+<span class="ai-line">AI: i am a simple ai chatbot created to talk with you.</span></div>
+    <p style="margin-top:12px; font-size:12px;">⚠️ Mỗi dòng bắt đầu bằng <code style="color:var(--accent)">User:</code> hoặc <code style="color:var(--green)">AI:</code> — viết thường, không dấu chấm câu cuối câu nếu không cần thiết.</p>
+  </div>
+
+  <!-- SUBMIT FORM -->
+  <div class="submit-card">
+    <h2>✏ Gửi dữ liệu mới</h2>
+    <form method="POST" action="/">
+      <div class="field">
+        <label>Tên của bạn</label>
+        <input type="text" name="submitter_name" placeholder="Ví dụ: Minh Anh, hoặc để trống nếu ẩn danh" maxlength="60">
+      </div>
+      <div class="field">
+        <label>Dữ liệu hội thoại (User / AI)</label>
+        <textarea name="training_text" placeholder="User: hi&#10;AI: hello! how are you?&#10;&#10;User: what can you do&#10;AI: i can chat and answer questions for you." required></textarea>
+      </div>
+      <button type="submit" class="submit-btn">Gửi dữ liệu →</button>
+    </form>
+  </div>
+
+  <!-- PENDING SECTION -->
+  <div class="section">
+    <div class="section-header">
+      <h2>⏳ Pending — Cần xét duyệt</h2>
+      <span class="badge badge-pending">{{ pending|length }}</span>
+    </div>
+    {% if pending %}
+      {% for item in pending|reverse %}
+      <div class="card">
+        <div class="card-meta">
+          <span class="card-submitter">👤 {{ item.name }}</span>
+          <span class="card-time">{{ item.submitted_at }}</span>
+        </div>
+        <div class="card-text">{{ item.text }}</div>
+        {% if is_owner %}
+        <div class="card-actions">
+          <a href="/approve/{{ item.id }}" class="btn btn-approve">✓ Approve</a>
+          <a href="/delete/{{ item.id }}" class="btn btn-delete" onclick="return confirm('Xoá submission này?')">✕ Delete</a>
+        </div>
+        {% else %}
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text-muted);">⚠ Chỉ owner mới có thể duyệt</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">Chưa có dữ liệu nào đang chờ duyệt.</div>
+    {% endif %}
+  </div>
+
+  <!-- APPROVED SECTION -->
+  <div class="section">
+    <div class="section-header">
+      <h2>✅ Approved — Đã duyệt</h2>
+      <span class="badge badge-approved">{{ approved|length }}</span>
+    </div>
+    {% if approved %}
+      {% for item in approved|reverse %}
+      <div class="card card-approved">
+        <div class="card-meta">
+          <span class="card-submitter">👤 {{ item.name }}</span>
+          <span class="card-time">Duyệt lúc {{ item.approved_at }}</span>
+        </div>
+        <div class="approved-label">Đã được duyệt · sẵn sàng dùng để huấn luyện</div>
+        <div class="card-text">{{ item.text }}</div>
+        {% if is_owner %}
+        <div class="card-actions">
+          <a href="/delete_approved/{{ item.id }}" class="btn btn-delete" onclick="return confirm('Xoá khỏi danh sách đã duyệt?')">✕ Xoá</a>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">Chưa có dữ liệu nào được duyệt.</div>
+    {% endif %}
+  </div>
+
+</div>
+</body>
+</html>
